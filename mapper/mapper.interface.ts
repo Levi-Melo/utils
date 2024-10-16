@@ -1,0 +1,55 @@
+import { MergeAll } from "../interfaces/merge-all";
+import { Path } from "../interfaces/path";
+import { TupleToNestedObject } from "../interfaces/tuple-to-nested";
+import { TupleToUnion, UnionToTuple } from "../interfaces/unions";
+
+export interface IMapper {
+  /**
+ * Function to map a array of objects using a array of fields.
+ * @function execute
+ * @returns Returns an array of mapped objects
+ * @example 
+ * ```ts
+ * this.execute({
+ * fields:['gps.latlng.latitude', 'gps.latlng.longitude', 'timestamp_event', 'identifier'],
+ * data: object[]
+ * })
+ * ```
+ * returns an array of
+ * ```ts
+ * {
+ *  gps: {
+ *     latlng: {
+ *       latitude: any,
+ *       longitude: any
+ *     }
+ *  },
+ *  timestamp_event: any,
+ *  identifier: any
+ * }
+ * ```
+ */
+  execute: <G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>) => IMapper.Result<T>[]
+}
+
+export namespace IMapper {
+  /**
+    * @param fields - Array of Path<object> like string[]
+    * @example
+    * ```ts
+    *fields:['gps.latlng.latitude', 'gps.latlng.longitude', 'timestamp_event', 'identifier']
+    * ```
+    * @param data - Array of object that will be mapped
+  */
+  export type Params<G,T> = {
+    fields: T;
+    data: G[]
+  };
+
+  // Novo tipo Result que mantém a estrutura original dos objetos
+  export type Result<T extends Path<any>[]> = merged<TupleToUnion<T>>
+  /**
+   * Helper to create result in object interface
+  */
+  export type merged<T extends string> = MergeAll<UnionToTuple<TupleToNestedObject<T, any>>>
+}
