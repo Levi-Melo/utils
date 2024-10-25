@@ -22,7 +22,7 @@ export class ExampleRepository extends ElasticSearchRepository<Example> {
     constructor() {
       super({
         entity: Example,
-        index: "report",
+        index: `exemple-${process.env.PATTERN_REPLACEBLE}`,
         options: elasticsearchOptions
       })
     }

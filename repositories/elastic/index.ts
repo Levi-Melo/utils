@@ -32,7 +32,7 @@ export class ElasticSearchRepository<E extends BaseEntity> implements NoSQLRepos
 
   rebuildIndex(replaces: string[]): void {
     const parternItems = this._index.split(process.env.PATTERN_SEPARATOR ?? '-')
-    const indexes = parternItems.map((elm, idx) => elm === 'replaceble' && idx).filter(el => el != false);
+    const indexes = parternItems.map((elm, idx) => elm === process.env.PATTERN_REPLACEBLE && idx).filter(el => el != false);
     indexes.forEach((replaceIndex, index)=>{
       parternItems[replaceIndex] = replaces[index] 
     })
