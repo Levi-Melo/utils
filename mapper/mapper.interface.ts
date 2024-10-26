@@ -6,11 +6,11 @@ import { TupleToUnion, UnionToTuple } from "../interfaces/unions";
 export interface IMapper {
   /**
  * Function to map a array of objects using a array of fields.
- * @function execute
+ * @function perform
  * @returns Returns an array of mapped objects
  * @example 
  * ```ts
- * this.execute({
+ * this.perform({
  * fields:['gps.latlng.latitude', 'gps.latlng.longitude', 'timestamp_event', 'identifier'],
  * data: object[]
  * })
@@ -29,7 +29,7 @@ export interface IMapper {
  * }
  * ```
  */
-  execute: <G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>) => IMapper.Result<T>[]
+  perform: <G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>) => IMapper.Result<T>[]
 }
 
 export namespace IMapper {

@@ -3,7 +3,7 @@ import { TupleToUnion } from "../interfaces/unions";
 import { IMapper } from "./mapper.interface";
 
 export class mapper {
-  execute<G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>): IMapper.Result<T>[] {
+  perform<G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>): IMapper.Result<T>[] {
     const { fields: selectedFields, data } = fields;
     return data.map(item => {
       return this.selectProperties(item, selectedFields)
