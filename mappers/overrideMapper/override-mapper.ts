@@ -1,12 +1,12 @@
-import { Path } from "../interfaces/path";
-import { TupleToUnion } from "../interfaces/unions";
-import { IMapper } from "./mapper.interface";
+import { Path } from "../../interfaces/path";
+import { TupleToUnion } from "../../interfaces/unions";
+import { IOverrideMapper } from "./override-mapper.interface";
 
-export class mapper {
-  perform<G extends object,T extends Path<G>[]>(fields: IMapper.Params<G,T>): IMapper.Result<T>[] {
-    const { fields: selectedFields, data } = fields;
+export class OverrideMapper implements IOverrideMapper {
+  perform<G extends object,T extends Path<G>[], H>(fields: IOverrideMapper.Params<G,T,H>): IOverrideMapper.Result<T>[] {
+    const { fields: selectedFields, data, subst } = fields;
     return data.map(item => {
-      return this.selectProperties(item, selectedFields)
+      return this.selectProperties(item, selectedFields, subst)
     }
     );
   }
@@ -17,7 +17,7 @@ export class mapper {
     * @returns Returns the mapped object
     * 
   */
-  private selectProperties<K, T extends Path<any>[]>(obj: K, paths: T): IMapper.merged<TupleToUnion<T>> {
+  private selectProperties<K, T extends Path<any>[], H>(obj: K, paths: T, subst:H): IOverrideMapper.merged<TupleToUnion<T>, H> {
     return paths.reduce((acc, path) => {
       const pathParts = path.split('.')
       let currentObj = acc;
@@ -42,7 +42,7 @@ export class mapper {
       }
       //get the last part of path and value
       const lastPart = pathParts[pathParts.length - 1];
-      let value = this.getPathValue(obj, path);
+      let value = subst
 
       //if the value is not undefined set him
       if (typeof value != undefined) {
@@ -56,18 +56,7 @@ export class mapper {
         currentObj[lastPart] = value.map(el => selectProperties(el, [lastPart]))
       }
       return acc;
-    }, {} as IMapper.merged<TupleToUnion<T>>);
-  }
-
-  /**
-    * Helper function to access the property using the path
-    * @param obj - object to get the property using paths
-    * @param paths - Array of Path<object> like string[]
-    * @returns return the value with the real path of mounted:
-    * 
-  */
-  private getPathValue(obj: any, path: string): any {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    }, {} as IOverrideMapper.merged<TupleToUnion<T>,H>);
   }
 }
 

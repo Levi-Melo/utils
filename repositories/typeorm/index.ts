@@ -1,13 +1,17 @@
-import { DataSource, EntityManager, Between,FindOptionsWhereProperty as ORMFindOptionsWhere ,FindManyOptions,FindOptionsOrder as ORMFindOptionsOrder, FindOptionsRelations as ORMFindOptionsRelations, FindOptionsWhere, Repository } from "typeorm";
+import { DataSource, EntityManager, Between,FindOptionsWhereProperty as ORMFindOptionsWhere ,FindManyOptions,FindOptionsOrder as ORMFindOptionsOrder, FindOptionsRelations as ORMFindOptionsRelations, FindOptionsWhere, Repository, FindOptionsSelect, FindOptionsSelectByString } from "typeorm";
 import { IBaseRepository } from "./base-repository";
 import { IBaseEntity } from "./base-entity";
+import { IOverrideMapper } from "../../mappers/overrideMapper/override-mapper.interface";
+import { Path } from "../../interfaces/path";
 
 export class BaseRepository<T extends IBaseEntity, H = T>  implements IBaseRepository<T,H>{
     private readonly runner: EntityManager
+    private readonly _overrideMapper: IOverrideMapper
     constructor(
         private readonly dataSource: DataSource,
-        private readonly baseEntity: T
-    ){  
+        private readonly baseEntity: T,
+        private readonly overrideMapper: IOverrideMapper
+  ){  
         this.runner = this.dataSource.createEntityManager()
     }
     async get (
@@ -27,7 +31,11 @@ export class BaseRepository<T extends IBaseEntity, H = T>  implements IBaseRepos
             let options: FindManyOptions<T> = {
               relations: { ...relations } as ORMFindOptionsRelations<T>,
               where,
-              select,
+              select: this._overrideMapper.perform<T, Path<T>[], true>({
+                data: [this.baseEntity],
+                fields: select,
+                subst: true
+              }) as unknown as FindOptionsSelect<T>,
               take: size,
               skip: (page - 1) * size,
               order: order as ORMFindOptionsOrder<T>
@@ -37,7 +45,11 @@ export class BaseRepository<T extends IBaseEntity, H = T>  implements IBaseRepos
               options = {
                 relations: { ...relations } as ORMFindOptionsRelations<T>,
                 where,
-                select,
+                select: this._overrideMapper.perform<T, Path<T>[], true>({
+                  data: [this.baseEntity],
+                  fields: select,
+                  subst: true
+                }) as unknown as FindOptionsSelect<T>,
                 order: order as ORMFindOptionsOrder<T>
               }
             }

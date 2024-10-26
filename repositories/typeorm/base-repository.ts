@@ -115,7 +115,7 @@ export namespace IBaseRepository{
           notPage?: boolean
           size?: number
           params?: Array<FindOptions<T>> | FindOptions<T>
-          select?: Path<T>[]
+          select: Path<T>[]
           relations?: FindOptionsRelations<T>
           order?: FindOptionsOrder<T>
         }
