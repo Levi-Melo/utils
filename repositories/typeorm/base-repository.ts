@@ -1,6 +1,6 @@
 import { EntityTarget } from "typeorm";
-import { IBaseEntity } from "@/domain/entities/base-entity";
-import { Path } from "../../../../../../../interfaces/path";
+import { IBaseEntity } from "./base-entity";
+import { Path } from "../../interfaces/path";
 
 export interface IBaseRepository<T extends IBaseEntity, H = T>{
     get:( data : IBaseRepository.Get.Params<T>) => Promise<IBaseRepository.Get.Result<T>>
